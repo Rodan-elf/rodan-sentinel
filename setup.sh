@@ -42,6 +42,13 @@ section() {
   echo ""
 }
 
+# ── Dry run mode ──────────────────────────────────────────────────────────────
+DRY_RUN=false
+if [[ "$1" == "--dry-run" ]]; then
+  DRY_RUN=true
+  warn "DRY RUN MODE"
+fi
+
 # ── Boot screen ───────────────────────────────────────────────────────────────
 clear
 echo ""
@@ -106,8 +113,12 @@ fi
 deploy_tool() {
   local cask="$1"
   local label="$2"
+  if [[ "$DRY_RUN" == true ]]; then
+    ok "[DRY RUN] Would install: ${label}"
+    return
+  fi
   if brew list --cask "$cask" &>/dev/null; then
-    warn "${label} already installed >> skipping"
+    warn "${label} already installed — skipping"
   else
     log "Deploying ${label}..."
     brew install --cask "$cask"
